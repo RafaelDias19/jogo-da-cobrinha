@@ -1,12 +1,15 @@
-let canvas = document.getElementById("snake"); //criar elemento que irá rodar o jogo
-let context = canvas.getContext("2d"); //....
+let canvas = document.getElementById("canvas");
+let context = canvas.getContext("2d");
+let score = 0
+let direction = "right";
 let box = 32;
-let snake = []; //criar cobrinha como lista, já que ela vai ser uma série de coordenadas, que quando pintadas, criam os quadradinhos
-snake[0] ={
+let snake = [{
     x: 8 * box,
     y: 8 * box
-}
-let direction = "right";
+}];
+
+let jogo
+
 let food ={
     x: Math.floor(Math.random() * 15 + 1) * box,
     y: Math.floor(Math.random() * 15 + 1) * box
@@ -14,7 +17,7 @@ let food ={
 
 function criarBG(){
     context.fillStyle = "lightgreen";
-    context.fillRect(0, 0, 16*box, 16*box); //desenha o retângulo usando x e y e a largura e altura setadas
+    context.fillRect(0, 0, 16*box, 16*box);
 }
 
 function criarCobrinha (){
@@ -25,7 +28,7 @@ function criarCobrinha (){
 }
 
 function drawFood (){
-    context.fillStyle = "red";
+    context.fillStyle = "brown";
     context.fillRect(food.x, food.y, box, box);
 }
 
@@ -39,7 +42,7 @@ function update(event){
     if(event.keyCode == 40 && direction != 'up') direction = 'down';
 }
 
-function iniciarJogo(){    
+function atualizaCanvas(){    
 
     if(snake[0].x > 15*box && direction == "right") snake[0].x = 0;
     if(snake[0].x < 0 && direction == 'left') snake[0].x = 16 * box;
@@ -48,8 +51,7 @@ function iniciarJogo(){
     
     for(i = 1; i < snake.length; i++){
         if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){
-            clearInterval(jogo);
-            alert('Game Over :(');
+            gameOver()
         }
     }
 
@@ -68,8 +70,10 @@ function iniciarJogo(){
     if(snakeX != food.x || snakeY != food.y){
         snake.pop(); //pop tira o último elemento da lista
     }else{
+        score += 10
         food.x = Math.floor(Math.random() * 15 +1) * box;
         food.y = Math.floor(Math.random() * 15 +1) * box;
+        document.querySelector('.pontuacao-topo').innerHTML = score
     }
     
     let newHead ={
@@ -80,4 +84,28 @@ function iniciarJogo(){
     snake.unshift(newHead); //método unshift adiciona como primeiro quadradinho da cobrinha
 }
 
-let jogo = setInterval(iniciarJogo, 100);
+function iniciarJogo() {
+    resetarJogo()
+    jogo = setInterval(atualizaCanvas, 100);
+}
+
+function gameOver() {
+    document.querySelector('.tela-game-over').style.display = 'flex';
+    document.querySelector('.pontuacao').innerHTML = score
+    clearInterval(jogo);
+}
+
+function resetarJogo() {
+    document.querySelector('.tela-game-over').style.display = 'none';
+    document.querySelector('.tela-inicial').style.display = 'none';
+    document.querySelector('.jogo').style.display = 'flex';
+    score = 0
+    snake = [{
+        x: 8 * box,
+        y: 8 * box
+    }];
+    food ={
+        x: Math.floor(Math.random() * 15 + 1) * box,
+        y: Math.floor(Math.random() * 15 + 1) * box
+    }
+}

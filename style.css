@@ -7,4 +7,75 @@ body{
     align-items: center;
     background-color:white;
     color: rgb(52, 165, 52);
+    background-image: url(./image/snake.png);
+    background-size: 80px;
+    background-repeat: repeat;
+}
+
+.tela-inicial{
+    background: lightblue;
+    height: 512px;
+    width: 512px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.botao{
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    background: blue;
+    cursor: pointer;
+    font-size: 2rem;
+}
+
+.botao:hover{
+    background: rgb(46, 31, 253);
+}
+
+.botao:active{
+    background: darkblue;
+}
+
+.jogo{
+    display: none;
+    text-align: center;
+    font-size: 1.4em;
+    background-color: lightblue;
+    flex-direction: column;
+    text-align: end;
+    border: black 2px solid;
+}
+
+.tela-game-over{
+    position: absolute;
+    background-color: #00000060;
+    border-radius: 30px;
+    padding: 30px 50px;
+    display: none;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.tela-game-over .t1{
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.jogo .pontuacao-topo{
+    padding: 3px 12px;    
+}
+
+.tela-game-over .botao{
+    margin-top: 15px;
+    font-size: 1.5rem;
 }

@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Snake Game</title>
+    <title>Jogo da Crobrinha</title>
     <link rel="stylesheet" href="style.css">
     <script defer src="script.js"></script>
 </head>
-<body>
-    <h1>SNAKE GAME!</h1>
-    <canvas id="snake" width="512" height="512"></canvas>
+<body >
+    <div class="tela-inicial">
+        <h1>Jogo da Crobrinha!</h1>
+        <button class="botao" type="button" onclick="iniciarJogo()">iniciar Jogo</button>
+    </div>
+    
+    <div class="jogo">
+        <span>Pontuação: <span class="pontuacao-topo">0</span> </span>
+        <canvas id="canvas" width="512" height="512"></canvas>
+    </div>
+    <div class="tela-game-over">
+        <span class="t1">Game Over</span>
+        <span>Sua Pontuação: <span class="pontuacao"></span> </span>
+        <button class="botao" type="button" onclick="iniciarJogo()">Jogar novamente</button>
+    </div>
 </body>
 </html>
