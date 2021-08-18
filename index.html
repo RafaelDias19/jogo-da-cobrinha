@@ -4,24 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Jogo da Crobrinha</title>
-    <link rel="stylesheet" href="style.css">
-    <script defer src="script.js"></script>
+    <title>Jogo da Cobrinha</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!--Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+
+    <script src="./js/jquery.js"></script>
+    <script defer src="./js/script.js"></script>    
 </head>
 <body >
-    <div class="tela-inicial">
-        <h1>Jogo da Crobrinha!</h1>
-        <button class="botao" type="button" onclick="iniciarJogo()">iniciar Jogo</button>
-    </div>
-    
-    <div class="jogo">
-        <span>Pontuação: <span class="pontuacao-topo">0</span> </span>
-        <canvas id="canvas" width="512" height="512"></canvas>
-    </div>
-    <div class="tela-game-over">
-        <span class="t1">Game Over</span>
-        <span>Sua Pontuação: <span class="pontuacao"></span> </span>
-        <button class="botao" type="button" onclick="iniciarJogo()">Jogar novamente</button>
+    <div class="container">
+        <div class="tela-inicial">
+            <span class="tela-inicial-t1">Jogo da Cobrinha!</span>
+            <div class="botoes">
+                <button class="botao" type="button" onclick="iniciarJogo()">iniciar Jogo</button>
+                <button class="botao" type="button" onclick="exibirControles()">Controles</button>
+                <button class="botao" type="button" onclick="exibirPontuacao()">Pontuação Geral</button>
+            </div>
+        </div>
+        <div class="jogo">
+            <div class="topo"> 
+                <div>
+                    <i onclick="navegacao('.jogo')" class="far fa-arrow-alt-circle-left"></i>
+                    <i onclick="pauseGame()" class="far fa-pause-circle"></i>
+                </div>
+                <span>Pontuação: <span class="pontuacao-topo">0</span> </span>
+            </div>
+            <canvas id="canvas" width="512" height="512"></canvas>
+        </div>
+        <div class="pop-up">
+            <span class="pop-up-titulo"></span>
+            <span class="pop-up-descricao"></span>
+            <button class="botao pop-up-botao" type="button"></button>
+        </div>
+        <div class="tela-pontuacao">
+            <span>Pontuação</span>
+            <ul class="pontuacoes"></ul>
+            <button class="botao" type="button" onclick="exibirTelaInicial()">Voltar</button>
+        </div>
     </div>
 </body>
 </html>

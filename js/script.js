@@ -2,6 +2,7 @@ let canvas = document.getElementById("canvas");
 let context = canvas.getContext("2d");
 let score = 0
 let direction = "right";
+let pause = false;
 let box = 32;
 let snake = [{
     x: 8 * box,
@@ -40,6 +41,11 @@ function update(event){
     if(event.keyCode == 38 && direction != 'down') direction = 'up';
     if(event.keyCode == 39 && direction != 'left') direction = 'right';
     if(event.keyCode == 40 && direction != 'up') direction = 'down';
+
+    if(event.keyCode === 80){
+        pauseGame()
+    }
+
 }
 
 function atualizaCanvas(){    
@@ -73,7 +79,7 @@ function atualizaCanvas(){
         score += 10
         food.x = Math.floor(Math.random() * 15 +1) * box;
         food.y = Math.floor(Math.random() * 15 +1) * box;
-        document.querySelector('.pontuacao-topo').innerHTML = score
+        $('.pontuacao-topo').html(score)
     }
     
     let newHead ={
@@ -89,14 +95,92 @@ function iniciarJogo() {
     jogo = setInterval(atualizaCanvas, 100);
 }
 
+function popUp(titulo, acao, classe = '', descricao = '') {
+    $('.pop-up-titulo').html(titulo)
+    $('.pop-up-descricao').html(descricao)
+    $('.pop-up-botao').html(acao)
+    $('.pop-up-botao').addClass(classe)
+}
+
+function navegacao(antigoLocal, novoLocal = '.tela-inicial') {
+    $(antigoLocal).hide()
+    $(novoLocal).css('display', 'flex')
+}
+
+function exibirTelaInicial() {
+    navegacao('.tela-pontuacao')
+}
+
+function pauseGame() {
+    if(!jogo) return
+    if (pause) {
+        jogo = setInterval(atualizaCanvas, 100);
+        document.querySelector('.pop-up').style.display = 'none';
+
+    }else{
+        document.querySelector('.pop-up').style.display = 'flex';
+        clearInterval(jogo);
+    }
+    pause = !pause
+    popUp('Jogo pausado', 'Retomar jogo', 'btn-pause')
+
+}
+
+function exibirControles(params) {
+    console.log('controles')
+}
+
+function exibirPontuacao(params) {
+    $.ajax({
+        url: "./score.jsona",
+        success: function(result){
+            let pontuacao = JSON.parse(result)
+            pontuacao.sort(function(a, b){return b.pontuacao - a.pontuacao});
+            $('.pontuacoes').html('')
+            pontuacao.forEach(function (value, index) {
+                $('.pontuacoes').append(`
+                    <li><span class="nome">${value.nome}:</span> <span class="pontuacao">${value.pontuacao}</span></li>
+                `)
+            })
+            $('.tela-inicial').hide()
+            $('.tela-pontuacao').css('display', 'flex')
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
+    })
+}
+
+$(".pop-up-botao").on("click", function(e){
+    let classes = e.target.className.split(' ')
+    let classe = classes[classes.length - 1]
+    switch (classe) {
+        case 'btn-gameover':
+            iniciarJogo()
+            break;
+        case 'btn-pause':
+            pauseGame()
+            break;
+    
+        default:
+            break;
+    }
+});
+
+
+
 function gameOver() {
-    document.querySelector('.tela-game-over').style.display = 'flex';
-    document.querySelector('.pontuacao').innerHTML = score
+    document.querySelector('.pop-up').style.display = 'flex';
+    popUp('Game over', 'jogar novamente', 'btn-gameover', 'Sua pontuacao: ' + score)
+    $('.pontuacao').html(score)
     clearInterval(jogo);
+    jogo = undefined
 }
 
 function resetarJogo() {
-    document.querySelector('.tela-game-over').style.display = 'none';
+    clearInterval(jogo);
+    document.querySelector('.pop-up').style.display = 'none';
     document.querySelector('.tela-inicial').style.display = 'none';
     document.querySelector('.jogo').style.display = 'flex';
     score = 0

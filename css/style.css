@@ -6,16 +6,22 @@ body{
     justify-content: center;
     align-items: center;
     background-color:white;
-    color: rgb(52, 165, 52);
-    background-image: url(./image/snake.png);
+    background-image: url(./../image/snake.png);
     background-size: 80px;
     background-repeat: repeat;
 }
 
-.tela-inicial{
+.container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background: lightblue;
     height: 512px;
     width: 512px;
+}
+
+.tela-inicial{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -42,6 +48,19 @@ body{
     background: darkblue;
 }
 
+.botoes{
+    display: flex;
+    flex-flow: column wrap;
+    margin-top: 50px;
+}
+
+.tela-inicial .botao , .tela-pontuacao .botao{
+    font-size: 1.5rem;
+    margin: 4px 0;
+    padding: 9px 50px;
+    width: 100%;
+}
+
 .jogo{
     display: none;
     text-align: center;
@@ -52,7 +71,7 @@ body{
     border: black 2px solid;
 }
 
-.tela-game-over{
+.pop-up{
     position: absolute;
     background-color: #00000060;
     border-radius: 30px;
@@ -65,7 +84,7 @@ body{
     line-height: 1.4;
 }
 
-.tela-game-over .t1{
+.pop-up-titulo{
     font-size: 1.8rem;
     color: #333;
     font-weight: bold;
@@ -75,7 +94,43 @@ body{
     padding: 3px 12px;    
 }
 
-.tela-game-over .botao{
+.pop-up-botao{
     margin-top: 15px;
     font-size: 1.5rem;
+}
+
+.tela-inicial-t1{
+    color: white;
+    font-size: 3em;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.tela-pontuacao{
+    display: none;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    /* border: black 1px solid; */
+}
+.pontuacoes {
+    width: 400px;
+}
+.pontuacoes li{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border: black 1px solid;
+}
+
+.topo{
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.topo i {
+    cursor: pointer;
 }
