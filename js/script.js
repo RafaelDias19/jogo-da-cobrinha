@@ -23,7 +23,10 @@ let food = {
   y: Math.floor(Math.random() * numBlocks) * boxSize,
 };
 
-tocarTrilhaSonora('trilha-menu');
+document.addEventListener('click', function() {
+  tocarTrilhaSonora('trilha-menu');
+});
+
 
 canvas.width = canvasSize;
 canvas.height = canvasSize;
