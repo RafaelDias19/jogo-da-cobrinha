@@ -1,49 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Jogo da Cobrinha</title>
+    <title>Snake Game</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
 
-    <!--Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+        crossorigin="anonymous" />
 
     <script src="./js/jquery.js"></script>
-    <script defer src="./js/script.js"></script>    
+    <script defer src="./js/script.js"></script>
 </head>
-<body >
+
+<body>
     <div class="container">
-        <div class="tela-inicial">
-            <span class="tela-inicial-t1">Jogo da Cobrinha!</span>
-            <div class="botoes">
-                <button class="botao" type="button" onclick="iniciarJogo()">iniciar Jogo</button>
-                <button class="botao" type="button" onclick="exibirControles()">Controles</button>
-                <button class="botao" type="button" onclick="exibirPontuacao()">Pontuação Geral</button>
+        <div class="start-screen">
+            <span class="start-screen-title">Snake Game!</span>
+            <div class="buttons">
+                <button class="button" type="button" onclick="startGame()">Start Game</button>
+                <!-- <button class="button" type="button" onclick="showControls()">Controls</button>
+                <button class="button" type="button" onclick="showHighScores()">High Scores</button> -->
             </div>
         </div>
-        <div class="jogo">
-            <div class="topo"> 
+        <div class="game">
+            <div class="top">
                 <div>
-                    <i onclick="navegacao('.jogo')" class="far fa-arrow-alt-circle-left"></i>
-                    <i onclick="pauseGame()" class="far fa-pause-circle"></i>
+                    <i onclick="navigate('.game')" class="fas fa-arrow-alt-circle-left"></i>
+                    <i onclick="togglePause()" class="fas fa-pause-circle"></i>
+                    <i onclick="muteGame()" class="hidden fas fa-volume-mute"></i>
+                    <i onclick="muteGame()" class="fas fa-volume-up"></i>
                 </div>
-                <span>Pontuação: <span class="pontuacao-topo">0</span> </span>
+                <span>Score: <span class="top-score">0</span> </span>
             </div>
             <canvas id="canvas" width="512" height="512"></canvas>
         </div>
-        <div class="pop-up">
-            <span class="pop-up-titulo"></span>
-            <span class="pop-up-descricao"></span>
-            <button class="botao pop-up-botao" type="button"></button>
-        </div>
-        <div class="tela-pontuacao">
-            <span>Pontuação</span>
-            <ul class="pontuacoes"></ul>
-            <button class="botao" type="button" onclick="exibirTelaInicial()">Voltar</button>
+        <div class="popup">
+            <span class="popup-title"></span>
+            <span class="popup-description"></span>
+            <button class="button popup-button" type="button"></button>
         </div>
     </div>
+    <audio id="trilha-menu">
+        <source src="./sounds/trilha-menu.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="trilha1">
+        <source src="./sounds/elevator-theme-outro-music-or-game-music-186869.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="trilha3">
+        <source src="./sounds/cottagecore-17463.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="bloop">
+        <source src="./sounds/bloop-2.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="pause">
+        <source src="./sounds/pause.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="game-over">
+        <source src="./sounds/game-over.mp3" type="audio/mpeg">
+    </audio>
+
 </body>
+
 </html>

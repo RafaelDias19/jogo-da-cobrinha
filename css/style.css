@@ -5,8 +5,8 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color:white;
-    background-image: url(./../image/snake.png);
+    background-color:black;
+    /* background-image: url(./../image/snake.png); */
     background-size: 80px;
     background-repeat: repeat;
 }
@@ -17,19 +17,20 @@ body{
     justify-content: center;
     align-items: center;
     background: lightblue;
+    background-image: url(./../image/bg.jpeg);
+    background-size: 512px;
     height: 512px;
     width: 512px;
 }
 
-.tela-inicial{
+.start-screen{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
-
-.botao{
+.button{
     padding: 8px 20px;
     border-radius: 50px;
     border: none;
@@ -40,28 +41,29 @@ body{
     font-size: 2rem;
 }
 
-.botao:hover{
+.button:hover{
     background: rgb(46, 31, 253);
 }
 
-.botao:active{
+.button:active{
     background: darkblue;
 }
 
-.botoes{
+.buttons{
     display: flex;
     flex-flow: column wrap;
     margin-top: 50px;
 }
 
-.tela-inicial .botao , .tela-pontuacao .botao{
+.start-screen .button , .high-scores .button{
     font-size: 1.5rem;
     margin: 4px 0;
     padding: 9px 50px;
     width: 100%;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.jogo{
+.game{
     display: none;
     text-align: center;
     font-size: 1.4em;
@@ -71,7 +73,7 @@ body{
     border: black 2px solid;
 }
 
-.pop-up{
+.popup{
     position: absolute;
     background-color: #00000060;
     border-radius: 30px;
@@ -84,29 +86,30 @@ body{
     line-height: 1.4;
 }
 
-.pop-up-titulo{
+.popup-title{
     font-size: 1.8rem;
     color: #333;
     font-weight: bold;
 }
 
-.jogo .pontuacao-topo{
+.game .top-score{
     padding: 3px 12px;    
 }
 
-.pop-up-botao{
+.popup-button{
     margin-top: 15px;
     font-size: 1.5rem;
 }
 
-.tela-inicial-t1{
-    color: white;
-    font-size: 3em;
+.start-screen-title{
+    color: rgba(30, 30, 149, 0.601);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: 3.2em;
     font-weight: bold;
-    margin: 20px 0;
+    margin: 18px 0px 75px
 }
 
-.tela-pontuacao{
+.high-scores{
     display: none;
     width: 100%;
     justify-content: center;
@@ -115,22 +118,28 @@ body{
     flex-wrap: nowrap;
     /* border: black 1px solid; */
 }
-.pontuacoes {
+
+.scores {
     width: 400px;
 }
-.pontuacoes li{
+
+.scores li{
     display: flex;
     justify-content: space-between;
     width: 100%;
     border: black 1px solid;
 }
 
-.topo{
+.top{
     display: flex;
     justify-content: space-between;
     padding: 5px 10px;
 }
 
-.topo i {
+.top i {
     cursor: pointer;
+}
+
+i .fa-volume-mute{
+    display: none;
 }

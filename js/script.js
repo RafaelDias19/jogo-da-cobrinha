@@ -1,195 +1,311 @@
-let canvas = document.getElementById("canvas");
-let context = canvas.getContext("2d");
-let score = 0
+const canvas = $("#canvas")[0];
+const context = canvas.getContext("2d");
+let score = 0;
 let direction = "right";
-let pause = false;
-let box = 32;
-let snake = [{
-    x: 8 * box,
-    y: 8 * box
-}];
+let isPaused = false;
+const boxSize = 32;
+let canvasSize = 512;
+let nextDirection = null;
+let gameLoopInterval;
+let intervalDuration = 300;
+let isMute = false;
+let snake = [
+  {
+    x: 8 * boxSize,
+    y: 8 * boxSize,
+  },
+];
 
-let jogo
+let numBlocks = (canvasSize / boxSize);
 
-let food ={
-    x: Math.floor(Math.random() * 15 + 1) * box,
-    y: Math.floor(Math.random() * 15 + 1) * box
+let food = {
+  x: Math.floor(Math.random() * numBlocks) * boxSize,
+  y: Math.floor(Math.random() * numBlocks) * boxSize,
+};
+
+tocarTrilhaSonora('trilha-menu');
+
+canvas.width = canvasSize;
+canvas.height = canvasSize;
+
+// Função para criar o fundo do canvas
+function createBackground() {
+  context.fillStyle = "lightgreen";
+  context.fillRect(0, 0, canvasSize, canvasSize);
 }
 
-function criarBG(){
-    context.fillStyle = "lightgreen";
-    context.fillRect(0, 0, 16*box, 16*box);
+// Função para desenhar a cobra
+function drawSnake() {
+  $.each(snake, function (index, segment) {
+    context.fillStyle = "green";
+    context.fillRect(segment.x, segment.y, boxSize, boxSize);
+  });
 }
 
-function criarCobrinha (){
-    for(i = 0; i < snake.length; i++){
-        context.fillStyle = "green";
-        context.fillRect(snake[i].x, snake[i].y, box, box);
+// Função para desenhar a comida
+function drawFood() {
+  context.fillStyle = "brown";
+  context.beginPath();
+  context.arc(food.x + boxSize / 2, food.y + boxSize / 2, boxSize / 2, 0, 2 * Math.PI);
+  context.fill();
+}
+
+// Evento de teclado
+$(document).on("keydown", function (event) {
+  // Armazenar a próxima direção desejada
+  if (event.keyCode == 37 && direction !== "right") nextDirection = "left";
+  else if (event.keyCode == 38 && direction !== "down") nextDirection = "up";
+  else if (event.keyCode == 39 && direction !== "left") nextDirection = "right";
+  else if (event.keyCode == 40 && direction !== "up") nextDirection = "down";
+  // updateCanvas()
+  if (event.keyCode === 80) {
+    console.log('aaa');
+    togglePause();
+  }
+});
+
+function updateCanvas() {
+
+  if (nextDirection !== null) {
+    direction = nextDirection;
+    nextDirection = null;
+  }
+  createBackground();
+  drawSnake();
+  drawFood();
+  moveSnake();
+  checkFoodCollision();
+
+}
+
+function moveSnake() {
+  let newHead = {
+    x: snake[0].x,
+    y: snake[0].y,
+  };
+  switch (direction) {
+    case "right":
+      newHead.x += boxSize;
+      break;
+    case "left":
+      newHead.x -= boxSize;
+      break;
+    case "up":
+      newHead.y -= boxSize;
+      break;
+    case "down":
+      newHead.y += boxSize;
+      break;
+  }
+  handleWallCrossing(newHead);
+  handleSelfCollision(newHead);
+  snake.unshift(newHead);
+}
+
+function handleWallCrossing(newHead) {
+  if (newHead.x >= numBlocks * boxSize) newHead.x = 0;
+  if (newHead.x < 0) newHead.x = (numBlocks - 1) * boxSize;
+  if (newHead.y >= numBlocks * boxSize) newHead.y = 0;
+  if (newHead.y < 0) newHead.y = (numBlocks - 1) * boxSize;
+}
+
+function handleSelfCollision(newHead) {
+  for (let i = 1; i < snake.length; i++) {
+    if (newHead.x === snake[i].x && newHead.y === snake[i].y) {
+      endGame();
+      return;
     }
+  }
 }
 
-function drawFood (){
-    context.fillStyle = "brown";
-    context.fillRect(food.x, food.y, box, box);
-}
+function checkFoodCollision() {
+  if (snake[0].x === food.x && snake[0].y === food.y) {
+    generateNewFoodPosition();
+    score += 10;
+    $(".top-score").html(score);
 
-//quando um evento acontece, detecta e chama uma função
-document.addEventListener('keydown', update);
-
-function update(event){
-    if(event.keyCode == 37 && direction != 'right') direction = 'left';
-    if(event.keyCode == 38 && direction != 'down') direction = 'up';
-    if(event.keyCode == 39 && direction != 'left') direction = 'right';
-    if(event.keyCode == 40 && direction != 'up') direction = 'down';
-
-    if(event.keyCode === 80){
-        pauseGame()
+    // Aumentar a velocidade a cada 30 pontos
+    if (score % 30 === 0) {
+      clearInterval(gameLoopInterval);
+      intervalDuration -= 10;
+      gameLoopInterval = setInterval(updateCanvas, intervalDuration);
     }
-
+    tocarTrilha('bloop');
+  } else {
+    snake.pop();
+  }
 }
 
-function atualizaCanvas(){    
-
-    if(snake[0].x > 15*box && direction == "right") snake[0].x = 0;
-    if(snake[0].x < 0 && direction == 'left') snake[0].x = 16 * box;
-    if(snake[0].y > 15*box && direction == "down") snake[0].y = 0;
-    if(snake[0].y < 0 && direction == 'up') snake[0].y = 16 * box;
-    
-    for(i = 1; i < snake.length; i++){
-        if(snake[0].x == snake[i].x && snake[0].y == snake[i].y){
-            gameOver()
-        }
+function generateNewFoodPosition() {
+  let emptySpaces = [];
+  for (let i = 0; i < numBlocks; i++) {
+    for (let j = 0; j < numBlocks; j++) {
+      let position = { x: i * boxSize, y: j * boxSize };
+      if (!snake.some(segment => segment.x === position.x && segment.y === position.y)) {
+        emptySpaces.push(position);
+      }
     }
+  }
+  let randomIndex = Math.floor(Math.random() * emptySpaces.length);
+  food = emptySpaces[randomIndex];
+}
 
-    criarBG();
-    criarCobrinha();
-    drawFood();
+// Função para iniciar o jogo
+function startGame() {
+  pararTrilha('trilha-menu');
+  tocarTrilhaSonora('trilha3');
+  resetGame();
+  // Para iniciar a sequência de trilhas:
+  createBackground();
+  gameLoopInterval = setInterval(updateCanvas, intervalDuration);
+}
 
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if(direction == "right") snakeX += box;
-    if(direction == "left") snakeX -= box;
-    if (direction == "up") snakeY -= box;
-    if(direction == "down") snakeY += box;
-
-    if(snakeX != food.x || snakeY != food.y){
-        snake.pop(); //pop tira o último elemento da lista
-    }else{
-        score += 10
-        food.x = Math.floor(Math.random() * 15 +1) * box;
-        food.y = Math.floor(Math.random() * 15 +1) * box;
-        $('.pontuacao-topo').html(score)
+// Função para pausar o jogo
+function togglePause() {
+  if (gameLoopInterval) {
+    tocarTrilha('pause')
+    clearInterval(gameLoopInterval);
+    // gameLoopInterval = undefined;
+    if (isPaused) {
+      gameLoopInterval = setInterval(updateCanvas, intervalDuration);
+      $(".popup").hide();
+      tocarTrilhaSonora('trilha3');
+    } else {
+      pararTrilha('trilha3');
+      clearInterval(gameLoopInterval);
+      $(".popup").css("display", "flex");
     }
-    
-    let newHead ={
-        x: snakeX,
-        y: snakeY
-    }
-
-    snake.unshift(newHead); //método unshift adiciona como primeiro quadradinho da cobrinha
+    isPaused = !isPaused;
+    showPopup("Game Paused", "Resume Game", "btn-pause");
+  }
 }
 
-function iniciarJogo() {
-    resetarJogo()
-    jogo = setInterval(atualizaCanvas, 100);
+// Função para encerrar o jogo
+function endGame() {
+  pararTrilha('trilha3');
+  tocarTrilha('game-over');
+  $(".popup").css("display", "flex");
+  showPopup(
+    "Game Over",
+    "Play Again",
+    "btn-gameover",
+    "Your score: " + score
+  );
+  $(".top-score").html(0);
+  resetVars();
 }
 
-function popUp(titulo, acao, classe = '', descricao = '') {
-    $('.pop-up-titulo').html(titulo)
-    $('.pop-up-descricao').html(descricao)
-    $('.pop-up-botao').html(acao)
-    $('.pop-up-botao').addClass(classe)
-}
-
-function navegacao(antigoLocal, novoLocal = '.tela-inicial') {
-    $(antigoLocal).hide()
-    $(novoLocal).css('display', 'flex')
-}
-
-function exibirTelaInicial() {
-    navegacao('.tela-pontuacao')
-}
-
-function pauseGame() {
-    if(!jogo) return
-    if (pause) {
-        jogo = setInterval(atualizaCanvas, 100);
-        document.querySelector('.pop-up').style.display = 'none';
-
-    }else{
-        document.querySelector('.pop-up').style.display = 'flex';
-        clearInterval(jogo);
-    }
-    pause = !pause
-    popUp('Jogo pausado', 'Retomar jogo', 'btn-pause')
+// Função para resetar o jogo
+function resetGame() {
+  $(".popup").hide();
+  $(".start-screen").hide();
+  $(".game").css("display", "flex");
+  $(".top-score").html(0);
+  resetVars();
 
 }
 
-function exibirControles(params) {
-    console.log('controles')
+function resetVars() {
+  score = 0;
+  intervalDuration = 300;
+  snake = [
+    {
+      x: 8 * boxSize,
+      y: 8 * boxSize,
+    },
+  ];
+  food = {
+    x: Math.floor(Math.random() * numBlocks) * boxSize,
+    y: Math.floor(Math.random() * numBlocks) * boxSize,
+  };
+  clearInterval(gameLoopInterval);
+  gameLoopInterval = undefined;
+  isPaused = false;
+  nextDirection = null;
+  direction = "right";
 }
 
-function exibirPontuacao(params) {
-    $.ajax({
-        url: "./score.jsona",
-        success: function(result){
-            let pontuacao = JSON.parse(result)
-            pontuacao.sort(function(a, b){return b.pontuacao - a.pontuacao});
-            $('.pontuacoes').html('')
-            pontuacao.forEach(function (value, index) {
-                $('.pontuacoes').append(`
-                    <li><span class="nome">${value.nome}:</span> <span class="pontuacao">${value.pontuacao}</span></li>
-                `)
-            })
-            $('.tela-inicial').hide()
-            $('.tela-pontuacao').css('display', 'flex')
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
-        }
-    })
+// Função para exibir pop-up
+function showPopup(title, action, className = "", description = "") {
+  $(".popup-title").html(title);
+  $(".popup-description").html(description);
+  $(".popup-button").html(action);
+  $(".popup-button").addClass(className);
 }
 
-$(".pop-up-botao").on("click", function(e){
-    let classes = e.target.className.split(' ')
-    let classe = classes[classes.length - 1]
-    switch (classe) {
-        case 'btn-gameover':
-            iniciarJogo()
-            break;
-        case 'btn-pause':
-            pauseGame()
-            break;
-    
-        default:
-            break;
-    }
+// Função para exibir tela inicial
+function showStartScreen() {
+  navigate(".high-scores");
+}
+
+// Função de navegação entre telas
+function navigate(oldLocation, newLocation = ".start-screen") {
+  $(oldLocation).hide();
+  $(newLocation).css("display", "flex");
+  $(".popup").hide();
+  resetVars();
+  pararTrilha('trilha3');
+  tocarTrilhaSonora('trilha-menu');
+}
+
+// Evento de clique no botão de pop-up
+$(".popup-button").on("click", function (e) {
+  let classes = e.target.className.split(" ");
+  let className = classes[classes.length - 1];
+  switch (className) {
+    case "btn-gameover":
+      startGame();
+      break;
+    case "btn-pause":
+      togglePause();
+      break;
+
+    default:
+      break;
+  }
 });
 
 
 
-function gameOver() {
-    document.querySelector('.pop-up').style.display = 'flex';
-    popUp('Game over', 'jogar novamente', 'btn-gameover', 'Sua pontuacao: ' + score)
-    $('.pontuacao').html(score)
-    clearInterval(jogo);
-    jogo = undefined
+
+
+function tocarTrilhaSonora(trilhaId) {
+  if (isMute) return
+  const trilha = document.getElementById(trilhaId);
+  trilha.loop = true;
+  trilha.play();
+
+  trilha.onended = function () {
+    trilha.currentTime = 0;
+    trilha.play();
+  };
 }
 
-function resetarJogo() {
-    clearInterval(jogo);
-    document.querySelector('.pop-up').style.display = 'none';
-    document.querySelector('.tela-inicial').style.display = 'none';
-    document.querySelector('.jogo').style.display = 'flex';
-    score = 0
-    snake = [{
-        x: 8 * box,
-        y: 8 * box
-    }];
-    food ={
-        x: Math.floor(Math.random() * 15 + 1) * box,
-        y: Math.floor(Math.random() * 15 + 1) * box
-    }
+function tocarTrilha(trilhaId) {
+  if (isMute) return
+  const trilha = document.getElementById(trilhaId);
+  trilha.currentTime = 0;
+  trilha.play();
 }
+
+
+function pararTrilha(trilhaId) {
+  const trilha = document.getElementById(trilhaId);
+  trilha.currentTime = 0;
+  trilha.pause(); // Pausa a reprodução da trilha
+}
+$(".fa-volume-mute").hide();
+function muteGame() {
+  if (!isMute) {
+    pararTrilha('trilha3')
+    $(".fa-volume-up").hide();
+    $(".fa-volume-mute").css("display", "inline-block");
+    isMute = !isMute;
+  } else {
+    isMute = !isMute;
+    tocarTrilhaSonora('trilha3')
+    $(".fa-volume-mute").hide();
+    $(".fa-volume-up").css("display", "inline-block");
+  }
+}
+
